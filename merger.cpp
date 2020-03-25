@@ -11,6 +11,36 @@ typedef struct transaksi {
    int qty;
 } Transaksi;
 
+typedef char *ptr_str;
+typedef char **arr_2d;
+
+arr_2d parser(ptr_str str){
+	arr_2d arr_tmp;
+	ptr_str pch;
+	int i;
+	arr_tmp =(char **) malloc(sizeof(char*) * 4);
+	
+	pch = strtok (str," ");
+	i=0;
+		while (pch != NULL)
+        {          
+          arr_tmp[i] = (char *) malloc(sizeof(char*) * 10);
+		  strcpy(arr_tmp[i],pch);
+		  		  	
+          pch = strtok (NULL, " ");          	  
+		  i++;
+        }
+	return arr_tmp;
+}
+
+void isi_trans(arr_2d data,Transaksi *trans)
+{
+	strcpy((*trans).kd_barang, data[0]);
+    strcpy((*trans).nama_barang,data[1]);
+    (*trans).harga=atoi(data[2]);
+    (*trans).qty=atoi(data[3]);
+}
+
 int main() 
 { 
    // Open two files to be merged 
@@ -19,53 +49,27 @@ int main()
   
    // Open file to store the result 
    FILE *fp3 = fopen("Merge.txt", "w"); 
-   char * pch; 
    char str[MAXCHAR];
    Transaksi trans[100];
-   int i=0,j=0;
+   int i=0;
+   arr_2d hsl_parser;
 
    printf("Isi file 1 : \n"); 
    	       
     while(fgets(str, MAXCHAR, fp1) != NULL)
     {
-        //printf("%s",str);
-        pch = strtok (str," ");
-        j=1;
-		while (pch != NULL)
-        {
-          //printf ("%s\n",pch);
-          switch(j){
-          	case 1 : strcpy(trans[i].kd_barang, pch);break;
-          	case 2 : strcpy(trans[i].nama_barang, pch);break;
-          	case 3 : trans[i].harga=atoi(pch);break;
-          	case 4 : trans[i].qty=atoi(pch);break;
-		  }	
-          pch = strtok (NULL, " ");          	  
-		  j++;
-        }
+        hsl_parser=parser(str);
+		isi_trans(hsl_parser,&trans[i]);
 		printf("%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);
-        i++;
+		i++;
     }   
        
     printf("Isi file 2 : \n");
     while(fgets(str, MAXCHAR, fp2) != NULL)
     {
-        //printf("%s",str);
-        pch = strtok (str," ");
-        j=1;
-		while (pch != NULL)
-        {
-          //printf ("%s\n",pch);
-          switch(j){
-          	case 1 : strcpy(trans[i].kd_barang, pch);break;
-          	case 2 : strcpy(trans[i].nama_barang, pch);break;
-          	case 3 : trans[i].harga=atoi(pch);break;
-          	case 4 : trans[i].qty=atoi(pch);break;
-		  }	
-          pch = strtok (NULL, " ");          	  
-		  j++;
-        }
-		printf("%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);
+        hsl_parser=parser(str);
+		isi_trans(hsl_parser,&trans[i]);
+		printf("%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);		
         i++;
     }	  
   
