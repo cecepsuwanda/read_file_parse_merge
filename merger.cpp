@@ -41,42 +41,54 @@ void isi_trans(arr_2d data,Transaksi *trans)
     (*trans).qty=atoi(data[3]);
 }
 
-int main() 
-{ 
-   // Open two files to be merged 
-   FILE *fp1 = fopen("obat.txt", "r"); 
-   FILE *fp2 = fopen("obat1.txt", "r"); 
-  
-   // Open file to store the result 
-   FILE *fp3 = fopen("Merge.txt", "w"); 
-   char str[MAXCHAR];
-   Transaksi trans[100];
-   int i=0;
-   arr_2d hsl_parser;
+void baca_file(ptr_str nm_file,Transaksi *trans,int *jml_data){	
+	FILE *fp = fopen(nm_file, "r");
+	char str[MAXCHAR];
+	
+    arr_2d hsl_parser;
+   
+	printf("Isi file %s : \n",nm_file);
+	while(fgets(str, MAXCHAR, fp) != NULL)
+    {
+        hsl_parser=parser(str);        
+		isi_trans(hsl_parser,&trans[*jml_data]);
+		printf("%s %s %d %d\n",trans[*jml_data].kd_barang,trans[*jml_data].nama_barang,trans[*jml_data].harga, trans[*jml_data].qty);
+		(*jml_data)++;
+    }
+    fclose(fp); 
+}
 
-   printf("Isi file 1 : \n"); 
-   	       
-    while(fgets(str, MAXCHAR, fp1) != NULL)
-    {
-        hsl_parser=parser(str);
-		isi_trans(hsl_parser,&trans[i]);
-		printf("%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);
-		i++;
-    }   
-       
-    printf("Isi file 2 : \n");
-    while(fgets(str, MAXCHAR, fp2) != NULL)
-    {
-        hsl_parser=parser(str);
-		isi_trans(hsl_parser,&trans[i]);
-		printf("%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);		
-        i++;
-    }	  
+void tulis_file(ptr_str nm_file,Transaksi *trans,int *jml_data){	
+  FILE *fp = fopen(nm_file, "w"); 
+  int i=0; 
   
-   printf("Merged file1.txt and file2.txt into file3.txt"); 
+  printf("Tulis ke file %s : \n",nm_file);
+  for(i=0;i<(*jml_data);i++){
+  	  fprintf(fp,"%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);
+	  printf("%s %s %d %d\n",trans[i].kd_barang,trans[i].nama_barang,trans[i].harga, trans[i].qty);
+  	
+  } 
   
-   fclose(fp1); 
-   fclose(fp2); 
-   fclose(fp3); 
+  fclose(fp);
+}
+
+int main() 
+{    
+   Transaksi *trans;
+   int jml_data=0;
+      
+   ptr_str nm_file;
+   nm_file = (ptr_str) malloc(sizeof(ptr_str));
+   strcpy(nm_file,"obat.txt");
+   
+   trans=(Transaksi *) malloc(sizeof(Transaksi *)*50);
+   baca_file(nm_file,trans,&jml_data);
+   
+   strcpy(nm_file,"obat1.txt");
+   baca_file(nm_file,trans,&jml_data);
+   
+   strcpy(nm_file,"Merge.txt");
+   tulis_file(nm_file,trans,&jml_data);
+   
    return 0; 
 } 
